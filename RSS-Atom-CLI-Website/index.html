@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RSS-Atom-CLI - RSS and Atom feeds, read in the terminal</title>
+<!-- pages-campaign site for Epsilon0xCell/RSS-Atom-CLI; source of truth: RSS-Atom-CLI-Website/ on the default branch -->
+<style>
+/* I set this one as a broadsheet because a feed reader is a wire service for one reader. Paper, rules, and a dateline do the work that decoration would do elsewhere. */
+*{box-sizing:border-box}
+body{margin:0;background:#f4efe3;color:#1d1a14;font-family:Georgia,"Times New Roman",serif}
+.paper{max-width:1020px;margin:0 auto;padding:30px 26px 56px}
+.masthead{text-align:center;border-bottom:4px double #1d1a14;padding-bottom:14px}
+.masthead h1{font-size:clamp(38px,7vw,66px);margin:6px 0;letter-spacing:.01em}
+.dateline{display:flex;justify-content:space-between;border-top:1px solid #1d1a14;border-bottom:1px solid #1d1a14;padding:6px 0;font-size:13px;text-transform:uppercase;letter-spacing:.12em}
+img.banner{width:100%;border:1px solid #1d1a14;margin:16px 0}
+img.logo{width:64px;float:left;margin:4px 14px 4px 0;border:1px solid #1d1a14}
+.cols{column-count:2;column-gap:34px;column-rule:1px solid #8a8271}
+@media(max-width:760px){.cols{column-count:1}}
+h2{font-size:20px;border-bottom:1px solid #1d1a14;padding-bottom:5px;break-after:avoid}
+p,li{line-height:1.7;font-size:15.5px}
+pre{background:#1d1a14;color:#f4efe3;padding:13px;overflow:auto;font-family:"Courier New",monospace;font-size:13.5px;break-inside:avoid}
+.chip{display:inline-block;border:1px solid #1d1a14;padding:2px 9px;margin:0 5px 5px 0;font-size:13px}
+.badges{text-align:center;margin:12px 0}.badges img{margin:0 4px 5px}
+a{color:#6b1f1f}
+footer{border-top:4px double #1d1a14;margin-top:30px;padding-top:12px;font-size:13px;display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+<div class="paper">
+<div class="dateline"><span>Terminal Edition</span><span>File: rss_tool.py</span><span>Standard library only</span></div>
+<header class="masthead"><h1>RSS-Atom-CLI</h1><p>A dependency-free RSS and Atom reader for the terminal.</p></header>
+<div class="badges">
+<img src="https://img.shields.io/github/stars/Epsilon0xCell/RSS-Atom-CLI?style=flat&color=6b1f1f" alt="Stars">
+<img src="https://img.shields.io/github/forks/Epsilon0xCell/RSS-Atom-CLI?style=flat&color=6b1f1f" alt="Forks">
+<img src="https://img.shields.io/github/last-commit/Epsilon0xCell/RSS-Atom-CLI?style=flat&color=6b1f1f" alt="Last commit">
+<img src="https://img.shields.io/github/languages/top/Epsilon0xCell/RSS-Atom-CLI?style=flat&color=6b1f1f" alt="Top language">
+<img src="https://img.shields.io/github/repo-size/Epsilon0xCell/RSS-Atom-CLI?style=flat&color=6b1f1f" alt="Repo size">
+</div>
+<img class="banner" src="https://raw.githubusercontent.com/Epsilon0xCell/RSS-Atom-CLI/main/banner.png" alt="RSS-Atom-CLI banner">
+<div class="cols">
+<h2>What this is</h2>
+<img class="logo" src="https://raw.githubusercontent.com/Epsilon0xCell/RSS-Atom-CLI/main/logo.png" alt="RSS-Atom-CLI logo">
+<p>I wrote this to read feeds without opening a browser or installing anything. I hand it one or more feed URLs or local feed files, and it prints the newest items with dates and links.</p>
+<p>It reads two formats. RSS 2.0 comes in through the channel and item tags in rss_tool.py. Atom comes in through the namespaced entry tags, and I take the first link with no rel or with rel alternate, because that is the article link and not the feed machinery.</p>
+<p>One bad feed does not kill a run. I catch errors per feed and keep going, and the run only exits non-zero when every feed failed.</p>
+<h2>Wire dispatch, from a real run</h2>
+<p>I ran the tool against the Python Insider Atom feed on 30 October 2026. This is what came back, trimmed to three items:</p>
+<pre>== Python Insider (https://blog.python.org/feeds/posts/default) ==
+  1. Python 3.15.2, 3.14.10, 3.13.18, 3.12.16 and 3.11.18 are out
+     Mon, 26 Oct 2026  https://blog.python.org/2026/10/python-3152-31410-31318-31216-31118/
+  2. Python 3.15.1, 3.14.9 and 3.13.17 are out
+     Wed, 21 Oct 2026  https://blog.python.org/2026/10/python-3151-3149-31317/</pre>
+<h2>The --open rule</h2>
+<p>The module docstring promised an --open flag for a long time and the code did not have it. It exists now. It prints one item link on its own line after the listing, like this from my local fixture run:</p>
+<pre>open[2]: https://example.com/2</pre>
+<p>It does not launch a browser. That is deliberate. I use this over SSH and in scripts, where there may be no browser at all. If the number is out of range it says how many items the feed has instead of failing.</p>
+<h2>Commands, as printed in the README</h2>
+<pre>python3 rss_tool.py https://example.com/feed.xml
+python3 rss_tool.py feed1.xml feed2.xml --limit 5
+python3 rss_tool.py https://example.com/feed.xml --open 2</pre>
+<h2>Dates, and the fallback I kept</h2>
+<p>Atom dates parse with fromisoformat after I swap a trailing Z for +00:00. RSS dates use the RFC 822 shape, which fromisoformat cannot read, so I print the first 16 characters. That slice is the weekday and the date, and part of a date beats no date.</p>
+<h2>Stack</h2>
+<p><span class="chip">Python</span><span class="chip">urllib</span><span class="chip">xml.etree</span><span class="chip">argparse</span></p>
+<h2>Links</h2>
+<p><a href="https://github.com/Epsilon0xCell/RSS-Atom-CLI">The repository</a> and <a href="https://github.com/Epsilon0xCell">my GitHub profile</a>.</p>
+</div>
+<footer><span>Built by Epsilon0xCell</span><span>Colophon: set in Georgia, ruled by hand.</span></footer>
+</div>
+</body>
+</html>
