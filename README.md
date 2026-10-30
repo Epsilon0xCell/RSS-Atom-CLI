@@ -1,6 +1,6 @@
 ![Banner](banner.png)
 
-# Best-RSS-Tool
+# RSS-Atom-CLI
 ```
 https://feedly.com/i
 ```
