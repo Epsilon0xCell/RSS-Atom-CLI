@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RSS-Atom-CLI: The Wire Room</title>
+<!-- pages-campaign site for Epsilon0xCell/RSS-Atom-CLI; source of truth: RSS-Atom-CLI-Website/ on the default branch -->
+<style>
+/* I built this page as a wire room desk, not a newspaper front page. The ticker runs on top, the dispatches sit in a single filed column, and the red rule is the one I keep coming back to on this project. */
+*{box-sizing:border-box}
+:root{--paper:#f6efdb;--paper2:#efe5c8;--ink:#221d15;--red:#7c1d1d;--red2:#9a2a22;--faded:#6f6450;--line:#c9b992}
+html{scroll-behavior:smooth}
+body{margin:0;background:#e9dfc3;color:var(--ink);font-family:ui-monospace,"Courier New",Courier,monospace}
+/* I let the ticker sit on dark ink so it reads as a machine band above the paper, not as part of the paper itself. */
+.ticker{background:var(--ink);color:#f6efdb;border-bottom:5px solid var(--red);overflow:hidden;white-space:nowrap;padding:9px 0;position:relative}
+.ticker-track{display:inline-block;white-space:nowrap;animation:wire 46s linear infinite;will-change:transform}
+.ticker:hover .ticker-track{animation-play-state:paused}
+.ticker-track span{margin:0 28px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.ticker-track b{color:#e8a49d;font-weight:700}
+@keyframes wire{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.desk{max-width:1060px;margin:0 auto;padding:0 22px 54px}
+.mast{padding:30px 0 18px;border-bottom:1px solid var(--ink);display:grid;grid-template-columns:110px 1fr;gap:22px;align-items:center}
+.mast img{width:110px;height:110px;object-fit:contain;border:1px solid var(--ink);background:#fff8e6;padding:6px}
+.kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin:0 0 8px}
+h1{font-size:clamp(38px,7vw,68px);line-height:.95;margin:0;font-family:Georgia,"Times New Roman",serif;letter-spacing:0}
+.sub{font-size:16px;line-height:1.6;max-width:640px;margin:12px 0 0}
+.filedline{margin-top:16px;padding:8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px;letter-spacing:.14em;text-transform:uppercase;display:flex;flex-wrap:wrap;gap:8px 26px;color:var(--faded)}
+.badges{margin:16px 0 4px}
+.badges img{margin:0 6px 6px 0;vertical-align:middle}
+img.banner{width:100%;display:block;border:1px solid var(--ink);margin:18px 0 8px}
+.cap{font-size:12.5px;color:var(--faded);line-height:1.6;margin:0 0 10px}
+.dispatch{border-top:3px solid var(--red);margin-top:42px;padding-top:16px;position:relative}
+.dispatch:nth-of-type(even){margin-left:38px}
+.dispatch:nth-of-type(odd){margin-right:22px}
+@media(max-width:700px){.dispatch:nth-of-type(even),.dispatch:nth-of-type(odd){margin-left:0;margin-right:0}.mast{grid-template-columns:76px 1fr}.mast img{width:76px;height:76px}}
+.stamp{display:inline-block;border:2px solid var(--red);color:var(--red);padding:3px 9px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;transform:rotate(-1.2deg);background:rgba(255,250,230,.55)}
+.dispatch h2{font-family:Georgia,"Times New Roman",serif;font-size:clamp(25px,4vw,36px);line-height:1.08;margin:12px 0 12px}
+.dispatch p,.dispatch li{font-size:15px;line-height:1.75}
+.dispatch p{max-width:760px}
+.wirelist{list-style:none;padding:0;margin:14px 0;border-top:1px dotted var(--faded)}
+.wirelist li{border-bottom:1px dotted var(--faded);padding:8px 0 8px 22px;position:relative}
+.wirelist li::before{content:"WIRE";position:absolute;left:0;top:11px;font-size:9px;letter-spacing:.12em;color:var(--red)}
+pre{background:#221d15;color:#f6efdb;padding:16px 18px;overflow-x:auto;font-size:13.5px;line-height:1.65;border-left:6px solid var(--red)}
+pre .ln{color:#c99a92}
+code{font-family:inherit}
+.photo{margin:26px 0}
+.photo img{width:100%;display:block;border:1px solid var(--ink);background:#fffdf2}
+.photo.wide{margin-right:-10px}
+.photo.narrow{max-width:720px}
+.photo.offset{margin-left:52px;max-width:860px}
+@media(max-width:700px){.photo.offset{margin-left:0}}
+.photo figcaption{font-size:12.5px;color:var(--faded);line-height:1.6;padding-top:7px;border-top:1px solid var(--line);margin-top:7px}
+a{color:var(--red)}
+a:hover{color:var(--red2)}
+.chips span{display:inline-block;border:1px solid var(--ink);padding:3px 10px;margin:0 6px 7px 0;font-size:13px;background:var(--paper2)}
+footer{border-top:4px double var(--ink);margin-top:48px;padding-top:14px;font-size:13px;line-height:1.7;display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-between}
+/* I hide a dispatch only after script proves it can bring it back. With script off, every dispatch is already on the desk. */
+html.armed .dispatch{opacity:0;transform:translateY(16px)}
+html.armed .dispatch.filed{opacity:1;transform:translateY(0);transition:opacity .55s ease,transform .55s ease}
+@media (prefers-reduced-motion: reduce){
+ .ticker-track{animation:none}
+ html.armed .dispatch{opacity:1;transform:none}
+ html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<!-- I repeat the ticker items as a plain list in Dispatch 01. A moving band is a bad only copy of anything. -->
+<div class="ticker" aria-label="Wire ticker">
+ <div class="ticker-track" aria-hidden="true">
+  <span><b>Wire</b> RSS 2.0 and Atom, one file: rss_tool.py</span><span><b>Wire</b> Standard library only, nothing to install</span><span><b>Wire</b> --open N prints one link on its own line</span><span><b>Wire</b> One bad feed does not kill the run</span><span><b>Wire</b> Dates fall back to the first 16 characters</span><span><b>Wire</b> Exit code stays 0 unless every feed fails</span>
+  <span><b>Wire</b> RSS 2.0 and Atom, one file: rss_tool.py</span><span><b>Wire</b> Standard library only, nothing to install</span><span><b>Wire</b> --open N prints one link on its own line</span><span><b>Wire</b> One bad feed does not kill the run</span><span><b>Wire</b> Dates fall back to the first 16 characters</span><span><b>Wire</b> Exit code stays 0 unless every feed fails</span>
+ </div>
+</div>
+
+<div class="desk">
+ <header class="mast">
+  <img src="https://raw.githubusercontent.com/Epsilon0xCell/RSS-Atom-CLI/main/logo.png" alt="RSS-Atom-CLI logo">
+  <div>
+   <p class="kicker">From the wire room, terminal desk</p>
+   <h1>RSS-Atom-CLI</h1>
+   <p class="sub">I fetch RSS and Atom feeds from the URLs I am handed and I print the entries in the terminal. One Python file, no installs, no browser opened for me.</p>
+  </div>
+ </header>
+ <div class="filedline"><span>File: rss_tool.py</span><span>Format: RSS 2.0 and Atom</span><span>Run date for the capture below: 31 October 2026</span></div>
+ <div class="badges">
+  <img src="https://img.shields.io/github/stars/Epsilon0xCell/RSS-Atom-CLI?style=flat&color=7c1d1d" alt="Stars">
+  <img src="https://img.shields.io/github/forks/Epsilon0xCell/RSS-Atom-CLI?style=flat&color=7c1d1d" alt="Forks">
+  <img src="https://img.shields.io/github/last-commit/Epsilon0xCell/RSS-Atom-CLI?style=flat&color=7c1d1d" alt="Last commit">
+  <img src="https://img.shields.io/github/languages/top/Epsilon0xCell/RSS-Atom-CLI?style=flat&color=7c1d1d" alt="Top language">
+  <img src="https://img.shields.io/github/repo-size/Epsilon0xCell/RSS-Atom-CLI?style=flat&color=7c1d1d" alt="Repo size">
+  <img src="https://img.shields.io/github/license/Epsilon0xCell/RSS-Atom-CLI?style=flat&color=7c1d1d" alt="License MIT">
+ </div>
+ <img class="banner" src="https://raw.githubusercontent.com/Epsilon0xCell/RSS-Atom-CLI/main/banner.png" alt="RSS-Atom-CLI banner">
+ <p class="cap">The banner from the root of this repo. I keep the art at the root and point the page at it, so the site and the repo never carry two copies that can drift apart.</p>
+
+ <article class="dispatch">
+  <span class="stamp">Dispatch 01, received first</span>
+  <h2>The wire items, in plain text</h2>
+  <p>The band at the top moves. I do not trust a moving band as the only place a fact lives, so the same items sit here as a list that stays still:</p>
+  <ul class="wirelist">
+   <li>RSS 2.0 and Atom, one file: rss_tool.py</li>
+   <li>Standard library only, nothing to install</li>
+   <li>--open N prints one link on its own line</li>
+   <li>One bad feed does not kill the run</li>
+   <li>Dates fall back to the first 16 characters</li>
+   <li>Exit code stays 0 unless every feed fails</li>
+  </ul>
+  <p>That is the whole job in six lines. The dispatches below file the proof in order.</p>
+ </article>
+
+ <article class="dispatch">
+  <span class="stamp">Dispatch 02, what it does</span>
+  <h2>I hand it a feed. It hands back a listing.</h2>
+  <p>I wrote this because I wanted to read feeds without opening a browser or installing a package first. I give rss_tool.py one or more feed URLs, or local feed files, and it prints the items with titles, dates, and links, numbered from 1.</p>
+  <p>It tells the two formats apart in parse(). If the root tag ends in feed, it reads Atom entries. Otherwise it looks for an RSS channel and walks its items. For Atom I take the first link with no rel or with rel alternate, because that is the article link. The self and edit links point at the feed machinery, and I skip them on purpose.</p>
+  <p>Fetching is plain about its split too. In fetch(), a source that starts with http goes out through urllib with my own user agent, RSS-Atom-CLI/1.0, and a 20 second timeout. Anything else is read as a local file, as bytes, same as the remote path returns.</p>
+  <div class="chips"><span>Python</span><span>urllib.request</span><span>xml.etree.ElementTree</span><span>argparse</span><span>datetime</span></div>
+ </article>
+
+ <article class="dispatch">
+  <span class="stamp">Dispatch 03, a real run</span>
+  <h2>Filed from my own machine, against a test feed I made for it</h2>
+  <p>Caption, stated plainly: this is a real run on 31 October 2026, at head 72696fc64b392ebafcfeed038f193c4553267b27. I wrote a small local RSS file with three invented test entries, served it with python3 -m http.server on localhost port 8765, and ran the tool against http://localhost:8765/fixture.xml with --open 2. The entries are fixture entries. The output below is what the program printed, word for word.</p>
+  <p>Command I ran:</p>
+  <pre>python3 rss_tool.py http://localhost:8765/fixture.xml --open 2</pre>
+  <p>Output it printed:</p>
+  <pre>== Wire Room Test Feed (http://localhost:8765/fixture.xml) ==
+  1. First test dispatch from the fixture
+     Sat, 31 Oct 2026  https://example.com/first-test-dispatch
+  2. Second test dispatch about feed dates
+     Fri, 30 Oct 2026  https://example.com/second-test-dispatch
+  3. Third test dispatch, plain and local
+     Thu, 29 Oct 2026  https://example.com/third-test-dispatch
+  open[2]: https://example.com/second-test-dispatch</pre>
+  <p>Read the dates in that output closely. Sat, 31 Oct 2026 is not a formatted date. It is the first 16 characters of an RFC 822 pubDate, which is the fallback in Dispatch 05 doing its work in a real run, not just sitting in the code.</p>
+ </article>
+
+ <article class="dispatch">
+  <span class="stamp">Dispatch 04, the --open rule</span>
+  <h2>--open prints a link. It does not open anything.</h2>
+  <p>The module docstring promised --open for a long time before the code had it. It has it now, and I checked this page against the code at head before I filed it. The flag checks the number against the full item list, not the limited slice shown above it, so I can ask for a link past the limit I set for the listing. Out of range, it tells me how many items the feed has and the run still counts as a success.</p>
+  <p>It does not launch a browser. That part is a choice, not a gap. I use this over SSH and in scripts, where there may be no browser at all, and a bare URL on its own line is the thing a caller can actually use.</p>
+  <p>Code capture: rss_tool.py, lines 134 to 144 at head 72696fc.</p>
+  <pre><span class="ln">134</span>     if open_item is not None:
+<span class="ln">135</span>         # I check the open number against the full item list, not the
+<span class="ln">136</span>         # limited slice above. A caller can ask for a link past the
+<span class="ln">137</span>         # limit they chose for the listing.
+<span class="ln">138</span>         if 1 &lt;= open_item &lt;= len(items):
+<span class="ln">139</span>             print(f"  open[{open_item}]: {items[open_item - 1]['link']}")
+<span class="ln">140</span>         else:
+<span class="ln">141</span>             # I print how many items the feed has when the number is
+<span class="ln">142</span>             # out of range. That tells the caller what range would
+<span class="ln">143</span>             # have worked without making the run a failure.
+<span class="ln">144</span>             print(f"  open[{open_item}]: this feed has {len(items)} item(s)")</pre>
+  <p>The flag itself is declared in main(), lines 152 to 153:</p>
+  <pre><span class="ln">152</span>     parser.add_argument("--open", type=int, metavar="N", default=None,
+<span class="ln">153</span>                         help="print item N's link on its own line after the listing")</pre>
+ </article>
+
+ <article class="dispatch">
+  <span class="stamp">Dispatch 05, dates</span>
+  <h2>Two date shapes come in. I handle one and I cut the other honestly.</h2>
+  <p>Atom dates use the ISO shape, so I swap a trailing Z for +00:00, parse with fromisoformat, and print a short year, month, and day. RSS pubDate uses the RFC 822 shape, which fromisoformat cannot read. When that parse fails, I print the first 16 characters of the raw date. That slice holds the weekday and the date, as the run in Dispatch 03 shows. I would rather show part of a date than drop the date and leave a reader guessing.</p>
+  <p>Code capture: rss_tool.py, lines 114 to 125 at head 72696fc.</p>
+  <pre><span class="ln">114</span>     for i, item in enumerate(items[:limit], 1):
+<span class="ln">115</span>         date = item["date"]
+<span class="ln">116</span>         try:
+<span class="ln">117</span>             # I swap a trailing Z for an offset that fromisoformat can
+<span class="ln">118</span>             # read. Atom dates use that Z form a lot.
+<span class="ln">119</span>             date = datetime.fromisoformat(date.replace("Z", "+00:00")).strftime("%Y-%m-%d")
+<span class="ln">120</span>         except ValueError:
+<span class="ln">121</span>             # RSS pubDate uses the RFC 822 shape, which fromisoformat
+<span class="ln">122</span>             # cannot read. I show the first 16 characters instead,
+<span class="ln">123</span>             # because that slice is the weekday and the date, and I
+<span class="ln">124</span>             # would rather show part of the date than drop it.
+<span class="ln">125</span>             date = date[:16]</pre>
+ </article>
+
+ <article class="dispatch">
+  <span class="stamp">Dispatch 06, commands</span>
+  <h2>Commands, quoted from the README as documentation</h2>
+  <p>These three lines are the README command list, quoted as documentation and labeled as such. They are not a run capture.</p>
+  <pre>python3 rss_tool.py https://example.com/feed.xml
+python3 rss_tool.py feed1.xml feed2.xml --limit 5
+python3 rss_tool.py https://example.com/feed.xml --open 2</pre>
+  <p>The README also says the thing plainly: --open N prints item N link on its own line after the listing, it does not launch a browser, and the tool stays usable over SSH and in scripts. Standard library only, no dependencies.</p>
+ </article>
+
+ <article class="dispatch">
+  <span class="stamp">Dispatch 07, filed photographs</span>
+  <h2>The visual sheets, filed as photographs of the work</h2>
+  <p>I drew six sheets for this repo and kept them in RSS-Atom-CLI-Visuals/. They sit here in filing order, each with the caption of what it actually shows.</p>
+  <figure class="photo wide">
+   <img src="https://raw.githubusercontent.com/Epsilon0xCell/RSS-Atom-CLI/main/RSS-Atom-CLI-Visuals/architecture.png" alt="Architecture sheet for RSS-Atom-CLI">
+   <figcaption>Architecture sheet. How fetch, parse, and show sit together inside the one file.</figcaption>
+  </figure>
+  <figure class="photo offset">
+   <img src="https://raw.githubusercontent.com/Epsilon0xCell/RSS-Atom-CLI/main/RSS-Atom-CLI-Visuals/data-flow.png" alt="Data flow sheet for RSS-Atom-CLI">
+   <figcaption>Data flow sheet. A feed comes in as bytes, turns into items, and leaves as numbered lines in the terminal.</figcaption>
+  </figure>
+  <figure class="photo narrow">
+   <img src="https://raw.githubusercontent.com/Epsilon0xCell/RSS-Atom-CLI/main/RSS-Atom-CLI-Visuals/flowchart.png" alt="Flowchart sheet for RSS-Atom-CLI">
+   <figcaption>Flowchart sheet. The path a run takes, including the per feed error branch.</figcaption>
+  </figure>
+  <figure class="photo wide">
+   <img src="https://raw.githubusercontent.com/Epsilon0xCell/RSS-Atom-CLI/main/RSS-Atom-CLI-Visuals/product-map.png" alt="Product map sheet for RSS-Atom-CLI">
+   <figcaption>Product map sheet. What this small tool covers, and what it leaves out on purpose.</figcaption>
+  </figure>
+  <figure class="photo offset">
+   <img src="https://raw.githubusercontent.com/Epsilon0xCell/RSS-Atom-CLI/main/RSS-Atom-CLI-Visuals/schematic.png" alt="Schematic sheet for RSS-Atom-CLI">
+   <figcaption>Schematic sheet. The wiring of the reader at a closer distance than the architecture sheet.</figcaption>
+  </figure>
+  <figure class="photo narrow">
+   <img src="https://raw.githubusercontent.com/Epsilon0xCell/RSS-Atom-CLI/main/RSS-Atom-CLI-Visuals/statistics.png" alt="Statistics sheet for RSS-Atom-CLI">
+   <figcaption>Statistics sheet. Counts and figures drawn from the project as it stood when the sheet was made.</figcaption>
+  </figure>
+ </article>
+
+ <article class="dispatch">
+  <span class="stamp">Dispatch 08, honest notes</span>
+  <h2>What I will not dress up</h2>
+  <p>This is a small tool and the page should not pretend otherwise. One file, two feed formats, a limit flag, and an open flag that prints a link. There is no database, no saved state, no unread tracking, and no refresh on a timer. I run it, I read the listing, and it ends.</p>
+  <p>Failure handling is the one piece I took care with. I catch errors per feed and keep going, because the feeds in a multi feed run do not depend on each other. The run returns 1 only when every feed failed. A feed file I do not understand raises a plain error, not an RSS or Atom feed, instead of printing an empty listing that would look like a feed with no posts.</p>
+  <p>Links: <a href="https://github.com/Epsilon0xCell/RSS-Atom-CLI">the repository</a> and <a href="https://github.com/Epsilon0xCell">my GitHub profile</a>. The code is MIT licensed, in the LICENSE file at the root.</p>
+ </article>
+
+ <footer><span>Built by Epsilon0xCell</span><span>Colophon: set in monospace on cream paper, ruled in deep red, filed from the terminal desk.</span></footer>
+</div>
+<script>
+/* I add the armed class from here, so a reader with script off never meets a hidden dispatch. */
+document.documentElement.classList.add('armed');
+/* I stamp each dispatch in as it reaches the desk, in filing order, and I leave it filed once it lands. */
+var dispatches = document.querySelectorAll('.dispatch');
+if ('IntersectionObserver' in window) {
+  var watcher = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) { entry.target.classList.add('filed'); watcher.unobserve(entry.target); }
+    });
+  }, { threshold: 0.12 });
+  dispatches.forEach(function (d) { watcher.observe(d); });
+} else {
+  dispatches.forEach(function (d) { d.classList.add('filed'); });
+}
+</script>
+</body>
+</html>
