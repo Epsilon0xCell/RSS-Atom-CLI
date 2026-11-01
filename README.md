@@ -1,9 +1,17 @@
-![Banner](banner.png)
+![Intro scenery](intro-banner.png)
+
 
 # RSS-Atom-CLI
+
+![Wordmark banner](banner.png)
+
+![Animated scene](scene.svg)
 ```
 https://feedly.com/i
 ```
+
+
+![Separator](sep-heavy.svg)
 
 ## Implementation
 
@@ -19,3 +27,5 @@ python3 rss_tool.py https://example.com/feed.xml --open 2
 not launch a browser, so the tool stays usable over SSH and in scripts.
 
 Standard library only - no dependencies.
+
+> **Collector note:** --open prints a link and launches no browser, and a run fails only when all feeds fail.

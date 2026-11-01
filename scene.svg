@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 260" role="img" aria-label="Album spread open on a bench inside a train shed, a page turning">
+<rect width="1200" height="260" fill="#8a8c84"/>
+<path d="M100 230 A 500 210 0 0 1 1100 230" fill="none" stroke="#5c5e58" stroke-width="10"/>
+<g fill="#ffe0a0" opacity=".35"><polygon points="300,10 360,10 460,230 360,230"/><polygon points="620,10 680,10 760,230 660,230"/></g>
+<g fill="#c9c9c9"><ellipse cx="820" cy="34" rx="12" ry="6"><animate attributeName="cy" values="34;38;34" dur="9s" repeatCount="indefinite"/></ellipse></g>
+<rect x="180" y="90" width="840" height="140" fill="#f6eed4"/>
+<rect x="592" y="90" width="16" height="140" fill="#cfc09a"/>
+<g><rect x="640" y="112" width="300" height="96" fill="#6b4226"/>
+<rect x="700" y="128" width="180" height="64" rx="18" fill="#f6eed4" stroke="#a84a28" stroke-width="6"/>
+<rect x="712" y="140" width="156" height="40" rx="12" fill="none" stroke="#264e7a" stroke-width="4"/>
+<animate attributeName="opacity" values="0;0;1;1;0" dur="18s" repeatCount="indefinite"/></g>
+<g opacity=".9"><path d="M608 92 L 980 92 L 960 228 L 608 228 Z" fill="#efe6c8"><animate attributeName="opacity" values="1;1;0;0;1" dur="18s" repeatCount="indefinite"/></path></g>
+<g fill="#ffe9b0"><circle cx="420" cy="60" r="2"><animate attributeName="cy" values="50;190" dur="11s" repeatCount="indefinite"/></circle><circle cx="700" cy="60" r="2"><animate attributeName="cy" values="40;180" dur="14s" repeatCount="indefinite"/></circle></g>
+<rect x="120" y="228" width="960" height="14" fill="#6b4e2e"/>
+<g><rect x="940" y="216" width="120" height="26" rx="10" fill="#d6caa8" stroke="#aa966e" stroke-width="2"><animateTransform attributeName="transform" type="rotate" values="0 1000 229;2 1000 229;0 1000 229" dur="18s" repeatCount="indefinite"/></rect></g>
+</svg>
