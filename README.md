@@ -1,9 +1,11 @@
-![Intro scenery](intro-banner.png)
+![Intro: a hand holding up one torn strip of cream ticker tape carrying rows of short dark dash marks, its end curling, the brass ticker machine still feeding ribbon behind it](intro-banner.png)
 
 
 # RSS-Atom-CLI
 
-![Wordmark banner](banner.png)
+<p align="center"><img src="logo.png" alt="RSS-Atom-CLI logo: a brass stock ticker under its glass dome, a coil of cream paper tape with plain dark dash marks spilling from its slot onto its brass base" width="200"></p>
+
+![Banner: a brass ticker machine with a glass dome on a wooden desk in window light, pouring out a long cream tape covered in neat rows of short dark marks that pools and curls across the desk](banner.png)
 
 ![Animated scene](scene.svg)
 ```
