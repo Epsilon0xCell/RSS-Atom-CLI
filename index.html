@@ -3,54 +3,60 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RSS-Atom-CLI: The Luggage Label Album</title>
-<meta name="description" content="rss_tool.py reads RSS 2.0 and Atom feeds in the terminal, accepts URLs or local files, and prints numbered items with dates and links. Standard library only.">
+<title>RSS-Atom-CLI: Off the Tape</title>
+<meta name="description" content="rss_tool.py reads RSS 2.0 and Atom feeds in the terminal, from URLs or local files, and prints numbered items with dates and links. Standard library only.">
 <style>
-@font-face{font-family:'Anek Devanagari';src:url('fonts/AnekDevanagari.ttf') format('truetype');}
-@font-face{font-family:'Bitter';src:url('fonts/Bitter.ttf') format('truetype');}
-:root{--blue:#264e7a;--rust:#a84a28;--cream:#f6eed4;--white:#fbf7ea}
-*{box-sizing:border-box} body{margin:0;background:var(--white);color:var(--blue);font-family:'Bitter',serif;line-height:1.65}
-h1,h2,h3{font-family:'Anek Devanagari',sans-serif}
-.hero{padding:2rem 6vw 1rem;max-width:1100px;margin:0 auto}.hero img.banner{width:100%;height:auto}
-.logo{width:92px;height:92px}
-main{padding:0 6vw 3rem;max-width:1100px;margin:0 auto}
-.leaf{background:var(--cream);padding:1.2rem 1.5rem;margin:1.4rem 0;position:relative;border-radius:14px}
-.leaf:before{content:'';position:absolute;inset:8px;border:2px solid var(--blue);border-radius:10px;pointer-events:none}
-.leaf{box-shadow:inset 0 0 0 4px var(--rust)}
-.stampno{position:absolute;top:10px;right:16px;color:var(--rust);font-family:'Anek Devanagari',sans-serif}
-.btn{display:inline-block;background:var(--cream);color:var(--blue);font-family:'Anek Devanagari',sans-serif;text-decoration:none;padding:.6rem 1.1rem;border-radius:12px;box-shadow:inset 0 0 0 3px var(--rust),inset 0 0 0 6px var(--cream),inset 0 0 0 8px var(--blue);margin:.3rem .3rem .3rem 0}
-.btn:hover{box-shadow:inset 0 0 0 3px var(--rust),inset 0 0 0 6px var(--cream),inset 0 0 0 8px var(--blue),4px 4px 0 rgba(38,78,122,.25)}
-.btn:active{background:#eadfc0}.btn:focus-visible{outline:2px solid var(--blue);outline-offset:4px}
-a{color:var(--blue)} a:before{content:'';display:inline-block;width:.55em;height:.55em;border:2px solid var(--blue);border-radius:50%;margin-right:.35em}
-a:hover:before{background:var(--blue)} .btn:before{content:none}
-.string{border-top:2px solid var(--rust);margin:2rem auto;position:relative;width:100%}
-.string:after{content:'';position:absolute;left:50%;top:-6px;width:10px;height:10px;border:2px solid var(--rust);border-radius:50%;background:var(--white)}
-.string.short{width:33%}.string.short:after{content:none}
-pre{background:#fffdf4;padding:1rem;overflow-x:auto;border:1px solid var(--rust)}
-.note{background:var(--cream);padding:.8rem 1rem;max-width:34rem;position:relative}
-.note:after{content:'';position:absolute;right:0;top:0;border-style:solid;border-width:0 22px 22px 0;border-color:var(--white) var(--white) #d8cba6 var(--white)}
-footer{padding:2rem 6vw}
+@font-face{font-family:'Spline Sans Mono';src:url('fonts/spline-sans-mono-400.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Spline Sans Mono';src:url('fonts/spline-sans-mono-700.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-400.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-600.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-700.woff2') format('woff2');font-weight:700;font-display:swap}
+:root{--desk:#221d13;--tape:#f3e9cd;--tapeedge:#e2d3a4;--brass:#a07d2c;--brassdeep:#7c5f1e;--ink:#1c1a14;--glass:#b9c8c4;--mut:#cfc39f}
+*{box-sizing:border-box} body{margin:0;background:var(--desk);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.65}
+h1,h2{font-family:'Spline Sans Mono',monospace}
+.hero{padding:2.4rem 6vw 1.4rem;max-width:1000px;margin:0 auto}
+.hero .logo{width:96px;height:96px;border:3px solid var(--brass);border-radius:50%}
+.hero h1{color:var(--tape);font-size:2.1rem;margin:.6rem 0 .3rem}
+.hero p{color:var(--mut);max-width:46rem}
+.hero img.banner{width:100%;height:auto;border:2px solid var(--brass);display:block;margin-top:1.2rem}
+.hero img.intro{width:100%;height:auto;border:2px solid var(--brass);display:block;margin-top:1rem}
+.btn{display:inline-block;background:var(--brass);color:var(--ink);font-family:'Spline Sans Mono',monospace;font-weight:700;text-decoration:none;padding:.55rem 1.1rem;border:2px solid var(--brassdeep);margin:.3rem .3rem .3rem 0}
+.btn:hover{background:var(--tape)}
+.btn:focus-visible{outline:3px solid var(--glass);outline-offset:3px}
+a{color:var(--brassdeep)}
+.tapebar{max-width:1000px;margin:1.2rem auto 0;padding:0 6vw}
+.tapebar .rule{height:14px;background:repeating-linear-gradient(90deg,var(--tape) 0 14px,transparent 14px 28px);opacity:.85}
+main{padding:.4rem 6vw 2.6rem;max-width:1000px;margin:0 auto}
+.strip{background:var(--tape);border-left:10px solid var(--tapeedge);border-right:10px solid var(--tapeedge);padding:1rem 1.4rem;margin:1.3rem 0;box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.strip h2{margin:.1rem 0 .4rem;font-size:1.35rem}
+.dashline{font-family:'Spline Sans Mono',monospace;color:var(--brassdeep);letter-spacing:.35em;font-size:.8rem}
+pre{background:var(--ink);color:#efe6c8;padding:1rem;overflow-x:auto;font-size:.95rem}
+code{font-family:'Spline Sans Mono',monospace;font-size:.9em;background:#e7d9ae;padding:.05rem .35rem}
+pre code{background:none;padding:0}
+footer{padding:.4rem 6vw 2.6rem;color:var(--mut);max-width:1000px;margin:0 auto}
+footer img.intro{width:100%;height:auto;border:2px solid var(--brass);display:block;margin-bottom:1rem}
 </style>
 </head>
 <body>
 <header class="hero">
-<img class="logo" src="assets/logo.png" alt="Hotel luggage label with a trunk latch clasp">
-<img class="banner" src="assets/banner.png" alt="Album spread of steamer trunks crowded with pasted labels">
+<img class="logo" src="assets/logo.png" alt="Brass stock ticker under its glass dome, cream tape coiling from its slot">
 <h1>RSS-Atom-CLI</h1>
-<p><code>rss_tool.py</code> reads RSS 2.0 and Atom feeds in the terminal, accepts URLs or local files, and prints numbered items with dates and links. Standard library only, no installs needed.</p>
-<p><a class="btn" href="https://github.com/Epsilon0xCell/RSS-Atom-CLI">Open the repo</a> <a class="btn" href="#condition">Condition report</a></p>
+<p>Reading feeds in the terminal, printed off the tape. <code>rss_tool.py</code> reads RSS 2.0 and Atom feeds, accepts feed URLs or local files, and prints numbered items with dates and links. One Python file, standard library only, nothing to install.</p>
+<p><a class="btn" href="https://github.com/Epsilon0xCell/RSS-Atom-CLI">Open the repo</a> <a class="btn" href="#condition">When feeds fail</a></p>
+<img class="banner" src="assets/banner.png" alt="The brass ticker machine on a wooden desk pouring out a long cream tape covered in neat rows of short dark marks">
 </header>
+<div class="tapebar"><div class="rule" aria-hidden="true"></div></div>
 <main>
-<div class="string"></div>
-<section class="leaf"><span class="stampno">Spread 1</span><h2>Gathering: the fetch</h2><p>Sources starting with http are fetched with a 20 second timeout and the User-Agent <code>RSS-Atom-CLI/1.0</code>. Anything else is opened as a local file. Both paths return bytes for the parser.</p></section>
-<section class="leaf"><span class="stampno">Spread 1, facing</span><h2>Sorting: the parse</h2><p>The parser tells Atom from RSS by the root tag. For Atom it picks the alternate link over self and edit links, and prefers updated over published. A file that is neither format raises an error rather than printing an empty list.</p></section>
-<div class="string short"></div>
-<section class="leaf"><span class="stampno">Spread 2</span><h2>Reading the page: the listing</h2><p>The listing prints a feed title header, then numbered items sliced by <code>--limit</code>, with 10 as the default, and dates shortened to a clean day.</p><pre>python3 rss_tool.py https://example.com/feed.xml
+<section class="strip"><p class="dashline">- - - - - -</p><h2>The fetch</h2><p>Anything that starts with <code>http</code> is fetched with a 20 second timeout and a <code>User-Agent</code> of <code>RSS-Atom-CLI/1.0</code>, so a dead host cannot hang the run and the feed server can see what asked. Everything else is opened as a local file. Both paths hand the same bytes to the parser.</p></section>
+<section class="strip"><p class="dashline">- - - - - -</p><h2>The parse</h2><p>The root tag tells Atom from RSS. Atom items take the alternate link over the self and edit links, and prefer the updated time over the published time. A file that is neither format raises an error instead of printing an empty list.</p></section>
+<section class="strip"><p class="dashline">- - - - - -</p><h2>The listing</h2><p>The feed title opens the listing, then numbered items follow, sliced by <code>--limit</code>, which defaults to 10, with dates shortened to a clean day. <code>--open N</code> reprints one chosen link on its own line at the foot of the listing, the line the repo README describes; asking past the end prints how many items the feed holds instead of failing.</p><pre>python3 rss_tool.py https://example.org/feed.xml
 python3 rss_tool.py feed1.xml feed2.xml --limit 5
-python3 rss_tool.py https://example.com/feed.xml --open 2</pre><p><code>--open N</code> reprints one chosen link on its own line at the foot of the listing. Asking past the end prints how many items the feed holds instead of failing.</p><div class="note"><p>Collector note: <code>--open</code> launches no browser, which keeps the tool sane over SSH and inside scripts.</p></div></section>
-<section class="leaf" id="condition"><span class="stampno">Closing spread</span><h2>Condition report</h2><p>Several feeds may ride in one command. One bad feed prints its error and the run continues. The exit code turns non-zero only when every feed failed.</p><div class="note"><p>Collector note: a run fails only when all feeds fail.</p></div></section>
-<p><a href="https://feedly.com/i">Feedly, as recorded in the repo README</a></p>
+python3 rss_tool.py https://blog.example.org/rss --open 2</pre></section>
+<section class="strip" id="condition"><p class="dashline">- - - - - -</p><h2>When feeds fail</h2><p>Several feeds may ride in one command. One bad feed prints its error and the run continues with the rest; the exit code is non-zero only when every feed failed, so a script can trust the signal. A feed tool the repo README links alongside the CLI is <a href="https://feedly.com/i">Feedly</a>, recorded here as it stands in the repo README.</p></section>
 </main>
-<footer><p>RSS-Atom-CLI is an album of gathered feeds: items kept in order, one link lifted out on request.</p></footer>
+<footer>
+<img class="intro" src="assets/intro-banner.png" alt="A hand holding up one torn strip of ticker tape, the machine still feeding ribbon behind it">
+<p>RSS-Atom-CLI keeps the old discipline of the tape: fetch, parse, print, and let one broken feed stop nothing.</p>
+</footer>
 </body>
 </html>
